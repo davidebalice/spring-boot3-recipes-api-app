@@ -21,9 +21,8 @@ public class RecipeDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
+    private String title;
     private String description;
     private int idCategory;
-    //private double price;
 
 }

@@ -9,11 +9,11 @@ import com.recipesapi.model.Ingredient;
 
 @Service
 public interface IngredientService {
-    Ingredient getCustomerById(int customerId);
+    Ingredient getIngredientById(int ingredientId);
 
-    ResponseEntity<String> updateCustomer(int id, Ingredient updateCustomer);
+    ResponseEntity<String> updateIngredient(int id, Ingredient updateIngredient);
 
-    ResponseEntity<String> deleteCustomer(Integer idCustomer);
+    ResponseEntity<String> deleteIngredient(Integer idIngredient);
 
-    List<Ingredient> searchCustomers(String keyword);
+    List<Ingredient> searchIngredients(String keyword);
 }

@@ -36,15 +36,14 @@ public class IngredientServiceImpl implements IngredientService {
 
             Ingredient existingIngredient = repository.findById(id).get();
 
-            if (updateIngredient.getName() != null) {
-                existingIngredient.setName(updateIngredient.getName());
+            if (updateIngredient.getTitle() != null) {
+                existingIngredient.setTitle(updateIngredient.getTitle());
             }
-            if (updateIngredient.getSurname() != null) {
-                existingIngredient.setSurname(updateIngredient.getSurname());
-            }
-            if (updateIngredient.getEmail() != null) {
-                existingIngredient.setEmail(updateIngredient.getEmail());
-            }
+            /*
+             * if (updateIngredient.getSurname() != null) {
+             * existingIngredient.setSurname(updateIngredient.getSurname());
+             * }
+             */
 
             repository.save(existingIngredient);
 

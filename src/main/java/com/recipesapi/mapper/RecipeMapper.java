@@ -6,32 +6,30 @@ import com.recipesapi.model.Recipe;
 
 public class RecipeMapper {
 
-    // Convert Product JPA Entity into ProductDto
-    public static RecipeDto mapToProductDto(Recipe product) {
-        RecipeDto productDto = new RecipeDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setDescription(product.getDescription());
-        //productDto.setPrice(product.getPrice());
-        productDto.setIdCategory(product.getCategory().getId());
+    // Convert Recipe JPA Entity into RecipeDto
+    public static RecipeDto mapToRecipeDto(Recipe recipe) {
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(recipe.getId());
+        recipeDto.setTitle(recipe.getTitle());
+        recipeDto.setDescription(recipe.getDescription());
+        recipeDto.setIdCategory(recipe.getCategory().getId());
 
-        return productDto;
+        return recipeDto;
     }
 
-    // Convert ProductDto into Product JPA Entity
-    public static Recipe mapToProduct(RecipeDto productDto) {
-        Recipe product = new Recipe();
-        product.setId(productDto.getId());
-        product.setName(productDto.getName());
-        product.setDescription(productDto.getDescription());
-      //  product.setPrice(productDto.getPrice());
+    // Convert RecipeDto into Recipe JPA Entity
+    public static Recipe mapToRecipe(RecipeDto recipeDto) {
+        Recipe recipe = new Recipe();
+        recipe.setId(recipeDto.getId());
+        recipe.setTitle(recipeDto.getTitle());
+        recipe.setDescription(recipeDto.getDescription());
 
         Category category = new Category();
-        category.setId(product.getCategory().getId());
-        category.setName(product.getCategory().getName());
-        category.setDescription(product.getCategory().getDescription());
-        product.setCategory(category);
+        category.setId(recipe.getCategory().getId());
+        category.setName(recipe.getCategory().getName());
+        category.setDescription(recipe.getCategory().getDescription());
+        recipe.setCategory(category);
 
-        return product;
+        return recipe;
     }
 }

@@ -15,24 +15,19 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     // JPQL query
     @Query("SELECT p FROM Recipe p " +
-            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :keyword, '%')) ")
+            "WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')) ")
     List<Recipe> searchRecipes(@Param("keyword") String keyword);
 
     // Native sql query
     /*
      * @Query(value = "SELECT * FROM api_recipes p WHERE " +
-     * "p.name LIKE CONCAT('%',:keyword, '%')" +
-     * "OR p.description LIKE CONCAT('%', :keyword, '%')" +
-     * "OR p.sku LIKE CONCAT('%', :keyword, '%')", nativeQuery = true)
+     * "p.title LIKE CONCAT('%',:keyword, '%')" +
+     * "OR p.description LIKE CONCAT('%', :keyword, '%')
      * List<Recipe> searchRecipes(@Param("keyword") String keyword);
      */
 
     List<Recipe> findByCategoryId(int categoryId);
 
-    @Query("SELECT p FROM Recipe p " +
-            "WHERE LOWER(p.sku) LIKE LOWER(CONCAT('%', :sku, '%')) ")
-    Optional<Recipe> findBySku(@Param("sku") String sku);
 
 }

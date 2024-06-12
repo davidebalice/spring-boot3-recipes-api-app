@@ -32,7 +32,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         Recipe recipe = new Recipe();
-        recipe.setName(recipeDto.getName());
+        recipe.setTitle(recipeDto.getTitle());
         recipe.setDescription(recipeDto.getDescription());
         recipe.setCategory(category);
         //recipe.setPrice(recipeDto.getPrice());
@@ -49,12 +49,6 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe getRecipeBySku(String sku) {
-        return repository.findBySku(sku).orElseThrow(
-                () -> new ResourceNotFoundException("Recipe", "sku"));
-    }
-
-    @Override
     public ResponseEntity<String> updateRecipe(int id, RecipeDto updatedRecipe) {
         try {
             if (!repository.existsById(id)) {
@@ -63,8 +57,8 @@ public class RecipeServiceImpl implements RecipeService {
 
             Recipe existingRecipe = repository.findById(id).get();
 
-            if (updatedRecipe.getName() != null) {
-                existingRecipe.setName(updatedRecipe.getName());
+            if (updatedRecipe.getTitle() != null) {
+                existingRecipe.setTitle(updatedRecipe.getTitle());
             }
             if (updatedRecipe.getDescription() != null) {
                 existingRecipe.setDescription(updatedRecipe.getDescription());

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,7 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "CRUD REST APIs for Recipe Resource", description = "PRODUCTS CRUD REST APIs - Create Recipe, Update Recipe, Get Recipe, Get All Recipes, Delete Recipe")
+@Tag(name = "CRUD REST APIs for Recipe Resource", description = "RECIPES CRUD REST APIs - Create Recipe, Update Recipe, Get Recipe, Get All Recipes, Delete Recipe")
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/recipes/")
@@ -115,22 +114,6 @@ public class RecipeController {
     public ResponseEntity<String> delete(@PathVariable Integer id) {
         service.deleteRecipe(id);
         return ResponseEntity.ok("Recipe deleted successfully");
-    }
-    //
-
-    // Get single Recipe Rest Api by Sku
-    // http://localhost:8081/api/v1/recipes/sku/11abc4g41125
-    @Operation(summary = "Get Recipe By Sku REST API", description = "Get Recipe By Sku REST API is used to get a single Recipe from the database, get Sku by url")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @GetMapping("/sku/{sku}")
-    public ResponseEntity<RecipeDto> getBySku(@PathVariable String sku) {
-        Recipe recipe = service.getRecipeBySku(sku);
-        if (recipe != null) {
-            RecipeDto recipeDto = RecipeMapper.mapToRecipeDto(recipe);
-            return new ResponseEntity<>(recipeDto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
     //
 

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 public interface RecipeService {
     Recipe addRecipe(RecipeDto p);
     Recipe getRecipeById(int productId);
-    Recipe getRecipeBySku(String sku);
     ResponseEntity<String> updateRecipe(int id, RecipeDto updatedRecipe);
     ResponseEntity<String> deleteRecipe(Integer idRecipe);
     List<Recipe> searchRecipes(String keyword);

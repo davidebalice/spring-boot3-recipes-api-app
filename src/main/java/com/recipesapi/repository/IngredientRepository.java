@@ -15,6 +15,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
 
     @Query("SELECT c FROM Ingredient c " +
             "WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%')) ")
-    List<Ingredient> searchCustomers(@Param("keyword") String keyword);
+    List<Ingredient> searchIngredients(@Param("keyword") String keyword);
 
 }

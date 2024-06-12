@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "api_category")
+@Table(name = "recipes_category")
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
