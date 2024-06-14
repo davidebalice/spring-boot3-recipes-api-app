@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.recipesapi.dto.IngredientDto;
 import com.recipesapi.dto.RecipeDto;
 import com.recipesapi.exception.ResourceNotFoundException;
 import com.recipesapi.model.Category;
+import com.recipesapi.model.Ingredient;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.CategoryRepository;
 import com.recipesapi.repository.RecipeRepository;
@@ -40,6 +42,24 @@ public class RecipeServiceImpl implements RecipeService {
         // recipe.setImageUrl(recipeDto.getImageUrl());
         // recipe.setActive(recipeDto.isActive());
 
+      
+
+           if (recipeDto.getIngredients() != null) {
+            for (IngredientDto ingredientDto : recipeDto.getIngredients()) {
+                Ingredient ingredient = new Ingredient();
+                ingredient.setTitle(ingredientDto.getTitle());
+              
+                ingredient.setQuantity(ingredientDto.getQuantity());
+                ingredient.setRecipe(recipe);
+
+                System.out.println(ingredientDto.getTitle());
+                System.out.println(ingredientDto.getQuantity());
+
+
+                recipe.addIngredient(ingredient);
+            }
+        }
+        System.out.println(recipe.getIngredients());
         return repository.save(recipe);
     }
 

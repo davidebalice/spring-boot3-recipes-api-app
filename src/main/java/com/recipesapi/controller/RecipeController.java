@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,6 +39,9 @@ public class RecipeController {
     private final RecipeRepository repository;
     private final RecipeService service;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public RecipeController(RecipeRepository repository, RecipeService service) {
         this.repository = repository;
         this.service = service;
@@ -64,8 +69,10 @@ public class RecipeController {
     @GetMapping("/{id}")
     public ResponseEntity<RecipeDto> getById(@PathVariable Integer id) {
         Recipe recipe = service.getRecipeById(id);
+        System.out.println(recipe);
         if (recipe != null) {
-            RecipeDto recipeDto = RecipeMapper.mapToRecipeDto(recipe);
+            // RecipeDto recipeDto = RecipeMapper.mapToRecipeDto(recipe);
+            RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
             return new ResponseEntity<>(recipeDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -90,6 +97,7 @@ public class RecipeController {
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@RequestBody RecipeDto p) {
         service.addRecipe(p);
+        //
         return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
     }
     //

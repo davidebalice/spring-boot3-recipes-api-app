@@ -1,6 +1,5 @@
 package com.recipesapi.dto;
 
-import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,23 +11,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//import com.recipesapi.model.Category;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class RecipeDto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class IngredientDto {
     private String title;
-    private String description;
-    private int idCategory;
-    private CategoryDto categoryDto;
-    private Set<IngredientDto> ingredients;
-
+    private int quantity;
 }

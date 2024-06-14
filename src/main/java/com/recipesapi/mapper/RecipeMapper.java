@@ -1,7 +1,12 @@
 package com.recipesapi.mapper;
 
+import org.hibernate.mapping.Set;
+import org.springframework.stereotype.Component;
+
+import com.recipesapi.dto.IngredientDto;
 import com.recipesapi.dto.RecipeDto;
 import com.recipesapi.model.Category;
+import com.recipesapi.model.Ingredient;
 import com.recipesapi.model.Recipe;
 
 public class RecipeMapper {
@@ -13,7 +18,6 @@ public class RecipeMapper {
         recipeDto.setTitle(recipe.getTitle());
         recipeDto.setDescription(recipe.getDescription());
         recipeDto.setIdCategory(recipe.getCategory().getId());
-
         return recipeDto;
     }
 
@@ -33,3 +37,5 @@ public class RecipeMapper {
         return recipe;
     }
 }
+
+

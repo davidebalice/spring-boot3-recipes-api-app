@@ -50,7 +50,9 @@ CREATE TABLE `recipes_ingredients` (
   `id` int(11) NOT NULL,
   `title` varchar(100) DEFAULT NULL,
   `id_recipe` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL
+  `quantity` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
