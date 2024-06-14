@@ -14,6 +14,7 @@ import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.CategoryRepository;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
+import com.recipesapi.utility.FormatResponse;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
@@ -49,12 +50,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<String> updateRecipe(int id, RecipeDto updatedRecipe) {
+    public ResponseEntity<FormatResponse> updateRecipe(int id, RecipeDto updatedRecipe) {
         try {
             if (!repository.existsById(id)) {
-                return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe not found"), HttpStatus.NOT_FOUND);
             }
-
+            
             Recipe existingRecipe = repository.findById(id).get();
 
             if (updatedRecipe.getTitle() != null) {
@@ -69,27 +70,22 @@ public class RecipeServiceImpl implements RecipeService {
 
                 existingRecipe.setCategory(category);
             }
-            /*
-            if (updatedRecipe.getPrice() != 0.0) {
-                existingRecipe.setPrice(updatedRecipe.getPrice());
-            }
-            */
 
             repository.save(existingRecipe);
 
-            return new ResponseEntity<>("Recipe updated successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe updated successfully!"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error updating recipe", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating recipe"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> deleteRecipe(Integer recipeId) {
+    public ResponseEntity<FormatResponse> deleteRecipe(Integer recipeId) {
         Optional<Recipe> pOptional = repository.findById(recipeId);
         if (pOptional.isPresent()) {
             Recipe p = pOptional.get();
             repository.delete(p);
-            return new ResponseEntity<>("Recipe deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe deleted successfully"), HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("Recipe", "id");
         }

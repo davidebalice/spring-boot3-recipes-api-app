@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.recipesapi.model.Ingredient;
 import com.recipesapi.repository.IngredientRepository;
 import com.recipesapi.service.IngredientService;
+import com.recipesapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,9 +62,9 @@ public class IngredientController {
     @Operation(summary = "Crate new Ingredient REST API", description = "Save new Ingredient on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<String> add(@Valid @RequestBody Ingredient p) {
+    public ResponseEntity<FormatResponse> add(@Valid @RequestBody Ingredient p) {
         repository.save(p);
-        return new ResponseEntity<>("Ingredient addedd successfully!", HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient addedd successfully"), HttpStatus.CREATED);
     }
     //
 
@@ -72,7 +73,7 @@ public class IngredientController {
     @Operation(summary = "Update Ingredient REST API", description = "Update Ingredient on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Ingredient updatedIngredient) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody Ingredient updatedIngredient) {
         return service.updateIngredient(id, updatedIngredient);
     }
     //
@@ -82,9 +83,9 @@ public class IngredientController {
     @Operation(summary = "Delete Ingredient REST API", description = "Delete Ingredient on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
+    public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
         service.deleteIngredient(id);
-        return ResponseEntity.ok("Ingredient deleted successfully");
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient deleted successfully"), HttpStatus.OK);
     }
     //
 

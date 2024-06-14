@@ -11,6 +11,7 @@ import com.recipesapi.exception.ResourceNotFoundException;
 import com.recipesapi.model.Ingredient;
 import com.recipesapi.repository.IngredientRepository;
 import com.recipesapi.service.IngredientService;
+import com.recipesapi.utility.FormatResponse;
 
 @Service
 public class IngredientServiceImpl implements IngredientService {
@@ -28,10 +29,10 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public ResponseEntity<String> updateIngredient(int id, Ingredient updateIngredient) {
+    public ResponseEntity<FormatResponse> updateIngredient(int id, Ingredient updateIngredient) {
         try {
             if (!repository.existsById(id)) {
-                return new ResponseEntity<>("Ingredient not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient not found"), HttpStatus.NOT_FOUND);
             }
 
             Ingredient existingIngredient = repository.findById(id).get();
@@ -39,27 +40,23 @@ public class IngredientServiceImpl implements IngredientService {
             if (updateIngredient.getTitle() != null) {
                 existingIngredient.setTitle(updateIngredient.getTitle());
             }
-            /*
-             * if (updateIngredient.getSurname() != null) {
-             * existingIngredient.setSurname(updateIngredient.getSurname());
-             * }
-             */
+           
 
             repository.save(existingIngredient);
 
-            return new ResponseEntity<>("Ingredient updated successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient updated successfully"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error updating ingredient", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating ingredient"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> deleteIngredient(Integer ingredientId) {
+    public ResponseEntity<FormatResponse> deleteIngredient(Integer ingredientId) {
         Optional<Ingredient> pOptional = repository.findById(ingredientId);
         if (pOptional.isPresent()) {
             Ingredient c = pOptional.get();
             repository.delete(c);
-            return new ResponseEntity<>("Ingredient deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient deleted successfully"), HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("Ingredient", "id");
         }

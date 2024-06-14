@@ -20,6 +20,7 @@ import com.recipesapi.mapper.CategoryMapper;
 import com.recipesapi.model.Category;
 import com.recipesapi.repository.CategoryRepository;
 import com.recipesapi.service.CategoryService;
+import com.recipesapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -68,9 +69,10 @@ public class CategoryController {
     @Operation(summary = "Crate new Category REST API", description = "Save new Category on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<String> add(@Valid @RequestBody Category p) {
+    public ResponseEntity<FormatResponse> add(@Valid @RequestBody Category p) {
         repository.save(p);
-        return new ResponseEntity<>("Category addedd successfully!", HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Category addedd successfully"),
+                HttpStatus.CREATED);
     }
     //
 
@@ -79,7 +81,7 @@ public class CategoryController {
     @Operation(summary = "Update Category REST API", description = "Update Category on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Category updatedCategory) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody Category updatedCategory) {
         return service.updateCategory(id, updatedCategory);
     }
     //
@@ -89,9 +91,9 @@ public class CategoryController {
     @Operation(summary = "Delete Category REST API", description = "Delete Category on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
+    public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
         service.deleteCategory(id);
-        return new ResponseEntity<>("Category deleted successfully!", HttpStatus.OK);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Category deleted successfully"), HttpStatus.OK);
     }
     //
 

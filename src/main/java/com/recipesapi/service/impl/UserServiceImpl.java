@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(user.getPassword()));
         repository.save(user);
         return new ResponseEntity<>("User added successfully", HttpStatus.OK);
+        
     }
 
     @Override

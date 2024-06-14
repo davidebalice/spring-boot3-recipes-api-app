@@ -22,6 +22,7 @@ import com.recipesapi.mapper.RecipeMapper;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
+import com.recipesapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -87,9 +88,9 @@ public class RecipeController {
     @Operation(summary = "Crate new  Recipe REST API", description = "Save new Recipe on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody RecipeDto p) {
+    public ResponseEntity<FormatResponse> add(@RequestBody RecipeDto p) {
         service.addRecipe(p);
-        return new ResponseEntity<>("Recipe addedd successfully!", HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
     }
     //
 
@@ -98,9 +99,9 @@ public class RecipeController {
     @Operation(summary = "Update Recipe REST API", description = "Update Recipe on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody RecipeDto updatedRecipe) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody RecipeDto updatedRecipe) {
         if (!repository.existsById(id)) {
-            return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new FormatResponse("Recipe not found!"), HttpStatus.NOT_FOUND);
         }
         return service.updateRecipe(id, updatedRecipe);
     }
@@ -111,9 +112,9 @@ public class RecipeController {
     @Operation(summary = "Delete Recipe REST API", description = "Delete Recipe on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
+    public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
         service.deleteRecipe(id);
-        return ResponseEntity.ok("Recipe deleted successfully");
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe deleted successfully!"), HttpStatus.OK);
     }
     //
 

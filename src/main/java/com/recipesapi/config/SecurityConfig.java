@@ -102,16 +102,21 @@ public class SecurityConfig {
 
 				.csrf(csrf -> csrf
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-						.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**", "POST"))
+						// .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**",
+						// "POST"))
 						// .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**",
 						// "PATCH"))
 						// .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**",
 						// "DELETE"))
 
 						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST"),
-								new AntPathRequestMatcher("/api/v1/login", "POST")))
+								new AntPathRequestMatcher("/api/v1/**", "POST"))
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "PATCH"),
+								new AntPathRequestMatcher("/api/v1/**", "PATCH"))
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "DELETE"),
+								new AntPathRequestMatcher("/api/v1/**", "DELETE"))
 
-				// .ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST"),
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST")))
 				// new AntPathRequestMatcher("/api/v1/products/add", "POST")))
 
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)

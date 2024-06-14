@@ -14,6 +14,7 @@ import com.recipesapi.exception.ResourceNotFoundException;
 import com.recipesapi.model.Category;
 import com.recipesapi.repository.CategoryRepository;
 import com.recipesapi.service.CategoryService;
+import com.recipesapi.utility.FormatResponse;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -35,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<String> updateCategory(int categoryId, Category updateCategory) {
+    public ResponseEntity<FormatResponse> updateCategory(int categoryId, Category updateCategory) {
         try {
             if (!repository.existsById(categoryId)) {
                 throw new ResourceNotFoundException("Category", "id");
@@ -49,19 +50,19 @@ public class CategoryServiceImpl implements CategoryService {
 
             repository.save(existingCategory);
 
-            return new ResponseEntity<>("Category updated successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Category updated successfully!"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error updating category", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating category!"), HttpStatus.OK);
         }
     }
 
     @Override
-    public ResponseEntity<String> deleteCategory(Integer categoryId) {
+    public ResponseEntity<FormatResponse> deleteCategory(Integer categoryId) {
         Optional<Category> pOptional = repository.findById(categoryId);
         if (pOptional.isPresent()) {
             Category c = pOptional.get();
             repository.delete(c);
-            return new ResponseEntity<>("Category deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Category deleted successfully!"), HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("Category", "id");
         }
