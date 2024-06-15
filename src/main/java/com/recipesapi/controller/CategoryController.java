@@ -3,6 +3,8 @@ package com.recipesapi.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.recipesapi.dto.CategoryDto;
-import com.recipesapi.mapper.CategoryMapper;
 import com.recipesapi.model.Category;
 import com.recipesapi.repository.CategoryRepository;
 import com.recipesapi.service.CategoryService;
@@ -35,6 +36,9 @@ public class CategoryController {
     private final CategoryRepository repository;
     private final CategoryService service;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public CategoryController(CategoryRepository repository, CategoryService service) {
         this.repository = repository;
         this.service = service;
@@ -48,8 +52,9 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDto>> list() {
         List<Category> categories = (List<Category>) repository.findAll();
         List<CategoryDto> categoriesDto = categories.stream()
-                .map(CategoryMapper::mapToCategoryDto)
+                .map(category -> modelMapper.map(category, CategoryDto.class))
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(categoriesDto);
     }
     //

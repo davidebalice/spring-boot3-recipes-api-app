@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.recipesapi.dto.RecipeDto;
-import com.recipesapi.mapper.RecipeMapper;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
@@ -56,7 +55,8 @@ public class RecipeController {
         Iterable<Recipe> recipes = repository.findAll();
         List<RecipeDto> recipesDto = new ArrayList<>();
         for (Recipe recipe : recipes) {
-            recipesDto.add(RecipeMapper.mapToRecipeDto(recipe));
+            RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
+            recipesDto.add(recipeDto);
         }
         return ResponseEntity.ok(recipesDto);
     }
@@ -71,7 +71,6 @@ public class RecipeController {
         Recipe recipe = service.getRecipeById(id);
         System.out.println(recipe);
         if (recipe != null) {
-            // RecipeDto recipeDto = RecipeMapper.mapToRecipeDto(recipe);
             RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
             return new ResponseEntity<>(recipeDto, HttpStatus.OK);
         } else {
@@ -134,7 +133,7 @@ public class RecipeController {
     public ResponseEntity<List<RecipeDto>> searchRecipes(@RequestParam("keyword") String keyword) {
         List<Recipe> recipes = service.searchRecipes(keyword);
         List<RecipeDto> recipesDto = recipes.stream()
-                .map(RecipeMapper::mapToRecipeDto)
+                .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(recipesDto);
     }
@@ -147,8 +146,9 @@ public class RecipeController {
     @GetMapping("/searchByCategoryId")
     public ResponseEntity<List<RecipeDto>> searchRecipesByCategoryId(@RequestParam int categoryId) {
         List<Recipe> recipes = service.searchRecipesByCategoryId(categoryId);
+
         List<RecipeDto> recipesDto = recipes.stream()
-                .map(RecipeMapper::mapToRecipeDto)
+                .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(recipesDto);
     }
@@ -162,7 +162,7 @@ public class RecipeController {
     public ResponseEntity<List<RecipeDto>> getAllRecipes() {
         List<Recipe> recipes = service.getAllRecipes();
         List<RecipeDto> recipesDto = recipes.stream()
-                .map(RecipeMapper::mapToRecipeDto)
+                .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(recipesDto);
     }

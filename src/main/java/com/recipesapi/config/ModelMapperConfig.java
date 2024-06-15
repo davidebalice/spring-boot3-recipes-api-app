@@ -18,19 +18,7 @@ public class ModelMapperConfig {
         TypeMap<Recipe, RecipeDto> typeMap = modelMapper.createTypeMap(Recipe.class, RecipeDto.class);
         typeMap.addMapping(Recipe::getIngredients, RecipeDto::setIngredients);
         typeMap.addMappings(mapper -> mapper.map(src -> src.getCategory(), RecipeDto::setCategoryDto));
-        // typeMap.addMapping(src -> src.getCategory().getId(),
-        // RecipeDto::setIdCategory);
-        //typeMap.addMapping(src -> src.getCategory().getId(), RecipeDto::setIdCategory);
-       // typeMap.addMapping(src -> src.getCategory().getName(), RecipeDto::setCategoryDtoName);
 
         return modelMapper;
     }
 }
-/*
- * modelMapper.createTypeMap(Recipe.class, RecipeDto.class)
- * .addMapping(src -> src.getCategory().getId(), RecipeDto::setCategoryDtoId)
- * .addMapping(src -> src.getCategory().getName(),
- * RecipeDto::setCategoryDtoTitle);
- * 
- * 
- */

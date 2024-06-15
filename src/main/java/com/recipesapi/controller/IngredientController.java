@@ -2,6 +2,8 @@ package com.recipesapi.controller;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +33,9 @@ public class IngredientController {
 
     private final IngredientRepository repository;
     private final IngredientService service;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public IngredientController(IngredientRepository repository, IngredientService service) {
         this.repository = repository;
@@ -64,7 +69,8 @@ public class IngredientController {
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Ingredient p) {
         repository.save(p);
-        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient addedd successfully"), HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient addedd successfully"),
+                HttpStatus.CREATED);
     }
     //
 
