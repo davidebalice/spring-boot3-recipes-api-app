@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 @Service
 public interface RecipeService {
-    Recipe addRecipe(RecipeDto p);
-    Recipe getRecipeById(int productId);
+    Recipe addRecipe(RecipeDto r);
+    Recipe getRecipeById(int recipeId);
     ResponseEntity<FormatResponse> updateRecipe(int id, RecipeDto updatedRecipe);
     ResponseEntity<FormatResponse> deleteRecipe(Integer idRecipe);
     List<Recipe> searchRecipes(String keyword);

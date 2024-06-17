@@ -1,7 +1,10 @@
 package com.recipesapi.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,23 +41,20 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setTitle(recipeDto.getTitle());
         recipe.setDescription(recipeDto.getDescription());
         recipe.setCategory(category);
-        //recipe.setPrice(recipeDto.getPrice());
+        // recipe.setPrice(recipeDto.getPrice());
         // recipe.setImageUrl(recipeDto.getImageUrl());
         // recipe.setActive(recipeDto.isActive());
 
-      
-
-           if (recipeDto.getIngredients() != null) {
+        if (recipeDto.getIngredients() != null) {
             for (IngredientDto ingredientDto : recipeDto.getIngredients()) {
                 Ingredient ingredient = new Ingredient();
                 ingredient.setTitle(ingredientDto.getTitle());
-              
+
                 ingredient.setQuantity(ingredientDto.getQuantity());
                 ingredient.setRecipe(recipe);
 
                 System.out.println(ingredientDto.getTitle());
                 System.out.println(ingredientDto.getQuantity());
-
 
                 recipe.addIngredient(ingredient);
             }
@@ -75,7 +75,7 @@ public class RecipeServiceImpl implements RecipeService {
             if (!repository.existsById(id)) {
                 return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe not found"), HttpStatus.NOT_FOUND);
             }
-            
+
             Recipe existingRecipe = repository.findById(id).get();
 
             if (updatedRecipe.getTitle() != null) {
@@ -84,6 +84,12 @@ public class RecipeServiceImpl implements RecipeService {
             if (updatedRecipe.getDescription() != null) {
                 existingRecipe.setDescription(updatedRecipe.getDescription());
             }
+
+            System.out.println(updatedRecipe.getImageUrl());
+            
+            if (updatedRecipe.getImageUrl() != null) {
+                existingRecipe.setImageUrl(updatedRecipe.getImageUrl());
+            }
             if (updatedRecipe.getIdCategory() >= 1) {
                 Category category = categoryRepository.findById(updatedRecipe.getIdCategory())
                         .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -91,11 +97,43 @@ public class RecipeServiceImpl implements RecipeService {
                 existingRecipe.setCategory(category);
             }
 
+            if (updatedRecipe.getIngredients() != null) {
+                Set<Ingredient> existingIngredients = existingRecipe.getIngredients();
+
+                Map<String, Ingredient> existingIngredientMap = existingIngredients.stream()
+                        .collect(Collectors.toMap(Ingredient::getTitle, ingredient -> ingredient));
+
+                for (IngredientDto updatedIngredientDto : updatedRecipe.getIngredients()) {
+                    String ingredientTitle = updatedIngredientDto.getTitle();
+                    int ingredientQuantity = updatedIngredientDto.getQuantity();
+
+                    if (existingIngredientMap.containsKey(ingredientTitle)) {
+                        Ingredient existingIngredient = existingIngredientMap.get(ingredientTitle);
+                        existingIngredient.setQuantity(ingredientQuantity);
+                    } else {
+                        Ingredient newIngredient = new Ingredient();
+                        newIngredient.setTitle(ingredientTitle);
+                        newIngredient.setQuantity(ingredientQuantity);
+                        newIngredient.setRecipe(existingRecipe);
+                        existingIngredients.add(newIngredient);
+                    }
+                }
+
+                existingIngredients.removeIf(ingredient -> updatedRecipe.getIngredients().stream()
+                        .noneMatch(
+                                updatedIngredientDto -> updatedIngredientDto.getTitle().equals(ingredient.getTitle())));
+
+                existingRecipe.setIngredients(existingIngredients);
+
+            }
+
             repository.save(existingRecipe);
 
-            return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe updated successfully!"), HttpStatus.OK);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe updated successfully!"),
+                    HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating recipe"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<FormatResponse>(new FormatResponse("Error updating recipe"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

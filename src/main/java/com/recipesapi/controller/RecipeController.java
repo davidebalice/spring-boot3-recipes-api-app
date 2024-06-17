@@ -1,13 +1,19 @@
 package com.recipesapi.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +24,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.recipesapi.dto.RecipeDto;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
+import com.recipesapi.utility.FileUploadUtil;
 import com.recipesapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +49,9 @@ public class RecipeController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     public RecipeController(RecipeRepository repository, RecipeService service) {
         this.repository = repository;
@@ -167,5 +179,62 @@ public class RecipeController {
         return ResponseEntity.ok(recipesDto);
     }
     //
+
+    @PostMapping("/{id}/uploadImage")
+    public ResponseEntity<String> uploadImage(@PathVariable int id,
+            @RequestParam("image") MultipartFile multipartFile) {
+        String fileName = id + "_" + StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+        try {
+
+            String uploadDir = uploadPath + "/image";
+            Path filePath = Paths.get(uploadDir, fileName);
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+            Recipe recipe = service.getRecipeById(id);
+            RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
+            recipeDto.setImageUrl(fileName);
+            System.out.println(recipe);
+            service.updateRecipe(id, recipeDto);
+
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/v1/recipes/download/")
+                    .path(fileName)
+                    .toUriString();
+
+            return ResponseEntity.ok(fileDownloadUri);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Errore durante l'upload dell'immagine.");
+        }
+    }
+
+    /*
+     * 
+     * @PostMapping("/upload")
+     * public ResponseEntity<String> uploadImage(@RequestParam("image")
+     * MultipartFile multipartFile) {
+     * String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+     * 
+     * try {
+     * // Crea il percorso completo per il file
+     * String filePath = uploadPath + File.separator + fileName;
+     * File destFile = new File(filePath);
+     * 
+     * // Salva il file uploadato
+     * multipartFile.transferTo(destFile);
+     * 
+     * // Restituisci l'URL completo dell'immagine caricata
+     * String fileDownloadUri = "/api/images/download/" + fileName;
+     * 
+     * return ResponseEntity.ok(fileDownloadUri);
+     * } catch (IOException e) {
+     * return new ResponseEntity<>("Errore durante l'upload dell'immagine.",
+     * HttpStatus.BAD_REQUEST);
+     * }
+     * }
+     */
 
 }

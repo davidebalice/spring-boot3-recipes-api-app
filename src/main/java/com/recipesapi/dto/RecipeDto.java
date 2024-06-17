@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//import com.recipesapi.model.Category;
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -28,6 +26,7 @@ public class RecipeDto {
     private String title;
     private String description;
     private int idCategory;
+    private String imageUrl;
     private CategoryDto categoryDto;
     private Set<IngredientDto> ingredients;
 
