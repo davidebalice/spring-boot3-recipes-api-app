@@ -1,42 +1,44 @@
 package com.recipesapi.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.recipesapi.dto.RecipeDto;
+import com.recipesapi.model.Category;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
-import com.recipesapi.utility.FileUploadUtil;
 import com.recipesapi.utility.FormatResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @Tag(name = "CRUD REST APIs for Recipe Resource", description = "RECIPES CRUD REST APIs - Create Recipe, Update Recipe, Get Recipe, Get All Recipes, Delete Recipe")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -46,6 +48,8 @@ public class RecipeController {
 
     private final RecipeRepository repository;
     private final RecipeService service;
+
+    private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
 
     @Autowired
     private ModelMapper modelMapper;
@@ -106,12 +110,33 @@ public class RecipeController {
     @Operation(summary = "Crate new  Recipe REST API", description = "Save new Recipe on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<FormatResponse> add(@RequestBody RecipeDto p) {
-        service.addRecipe(p);
-        //
-        return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
+    public ResponseEntity<FormatResponse> addRecipe(@Valid @RequestBody RecipeDto recipeDto) {
+
+        try {
+            service.addRecipe(recipeDto);
+            return new ResponseEntity<>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(new FormatResponse("Error uploading image"), HttpStatus.BAD_REQUEST);
+        }
     }
-    //
+
+    // Add new Recipe Rest Api - Recipe + photo
+    // http://localhost:8081/api/v1/recipes/add2
+    @Operation(summary = "Crate new  Recipe + photo REST API", description = "Save new Recipe on database with photo")
+    @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
+    @PostMapping("/add2")
+    // @RequestBody RecipeDto recipeDto,
+    public ResponseEntity<FormatResponse> addRecipe2(
+            @ModelAttribute RecipeDto recipeDto,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+
+        try {
+            service.addRecipe2(recipeDto, imageFile);
+            return new ResponseEntity<>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(new FormatResponse("Error uploading image"), HttpStatus.BAD_REQUEST);
+        }
+    }
 
     // Update Recipe Rest Api
     // http://localhost:8081/api/v1/recipes/1
@@ -180,61 +205,28 @@ public class RecipeController {
     }
     //
 
+    @Operation(summary = "Upload recipe image", description = "Upload photo of recipe")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("/{id}/uploadImage")
-    public ResponseEntity<String> uploadImage(@PathVariable int id,
+    public ResponseEntity<FormatResponse> uploadImage(@PathVariable int id,
             @RequestParam("image") MultipartFile multipartFile) {
-        String fileName = id + "_" + StringUtils.cleanPath(multipartFile.getOriginalFilename());
-
         try {
-
-            String uploadDir = uploadPath + "/image";
-            Path filePath = Paths.get(uploadDir, fileName);
-            if (Files.exists(filePath)) {
-                Files.delete(filePath);
-            }
-            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-
-            Recipe recipe = service.getRecipeById(id);
-            RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
-            recipeDto.setImageUrl(fileName);
-            System.out.println(recipe);
-            service.updateRecipe(id, recipeDto);
-
-            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/api/v1/recipes/download/")
-                    .path(fileName)
-                    .toUriString();
-
-            return ResponseEntity.ok(fileDownloadUri);
+            String fileDownloadUri = service.uploadImage(id, multipartFile, uploadPath);
+            return new ResponseEntity<>(new FormatResponse(fileDownloadUri), HttpStatus.OK);
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("Errore durante l'upload dell'immagine.");
+            return new ResponseEntity<>(new FormatResponse("Error uploading image"), HttpStatus.BAD_REQUEST);
         }
     }
 
-    /*
-     * 
-     * @PostMapping("/upload")
-     * public ResponseEntity<String> uploadImage(@RequestParam("image")
-     * MultipartFile multipartFile) {
-     * String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-     * 
-     * try {
-     * // Crea il percorso completo per il file
-     * String filePath = uploadPath + File.separator + fileName;
-     * File destFile = new File(filePath);
-     * 
-     * // Salva il file uploadato
-     * multipartFile.transferTo(destFile);
-     * 
-     * // Restituisci l'URL completo dell'immagine caricata
-     * String fileDownloadUri = "/api/images/download/" + fileName;
-     * 
-     * return ResponseEntity.ok(fileDownloadUri);
-     * } catch (IOException e) {
-     * return new ResponseEntity<>("Errore durante l'upload dell'immagine.",
-     * HttpStatus.BAD_REQUEST);
-     * }
-     * }
-     */
+    @Operation(summary = "Download recipe image", description = "Download photo of recipe")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @GetMapping("/image/{fileName:.+}")
+    public ResponseEntity<Resource> downloadImage(@PathVariable String fileName, HttpServletRequest request) {
+        try {
+            return service.downloadImage(fileName, request, uploadPath);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }

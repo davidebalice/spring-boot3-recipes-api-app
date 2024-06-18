@@ -58,20 +58,6 @@ public class SecurityConfig {
 		return userService;
 	}
 
-	/*
-	 * @Bean
-	 * CorsConfigurationSource corsConfigurationSource() {
-	 * CorsConfiguration configuration = new CorsConfiguration();
-	 * configuration.setAllowedOrigins(Arrays.asList("http://localhost",
-	 * "http://localhost:4200"));
-	 * configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH",
-	 * "DELETE", "OPTIONS"));
-	 * UrlBasedCorsConfigurationSource source = new
-	 * UrlBasedCorsConfigurationSource();
-	 * source.registerCorsConfiguration("/**", configuration);
-	 * return source;
-	 * }
-	 */
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(request -> {
@@ -88,7 +74,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests((requests) -> requests
 						.requestMatchers(HttpMethod.OPTIONS, "/api/v1/**").permitAll()
 						.requestMatchers("/", "/home", "/public", "/actuator/**", "/api/v1/error", "/api/v1/login",
-								"/api/v1/csrf",
+								"/api/v1/csrf", "/api/v1/recipes/image/**",
 								"swagger-ui.html", "/swagger-ui/**", "/v3/**")
 						.permitAll()
 						.anyRequest().authenticated())

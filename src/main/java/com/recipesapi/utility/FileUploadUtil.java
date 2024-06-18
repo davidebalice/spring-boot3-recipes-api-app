@@ -17,9 +17,10 @@ public class FileUploadUtil {
         }
 
         try {
-            Files.copy(multipartFile.getInputStream(), uploadPath.resolve(fileName));
-        } catch (IOException ex) {
-            throw new IOException("Could not save file: " + fileName, ex);
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(multipartFile.getInputStream(), filePath);
+        } catch (IOException e) {
+            throw new IOException("Could not save file: " + fileName, e);
         }
     }
 }
