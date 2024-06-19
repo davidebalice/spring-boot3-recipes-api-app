@@ -3,6 +3,7 @@ package com.recipesapi.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.recipesapi.dto.RecipeDto;
-import com.recipesapi.model.Category;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
@@ -124,14 +123,22 @@ public class RecipeController {
     // http://localhost:8081/api/v1/recipes/add2
     @Operation(summary = "Crate new  Recipe + photo REST API", description = "Save new Recipe on database with photo")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
-    @PostMapping("/add2")
+    @PostMapping(value = "/add-with-photo", consumes = "multipart/form-data")
     // @RequestBody RecipeDto recipeDto,
-    public ResponseEntity<FormatResponse> addRecipe2(
-            @ModelAttribute RecipeDto recipeDto,
+    public ResponseEntity<FormatResponse> addRecipeWithPhoto(
+            // @ModelAttribute RecipeDto recipeDto,
+            // @RequestPart("recipeDto") RecipeDto recipeDto,
+            @RequestPart("title") String title,
+            @RequestPart("description") String description,
+            @RequestPart("idCategory") Long idCategory,
+            @RequestPart("ingredients") List<Map<String, String>> ingredients,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
 
         try {
-            service.addRecipe2(recipeDto, imageFile);
+            RecipeDto recipeDto = new RecipeDto();
+            recipeDto.setTitle(title);
+            recipeDto.setDescription(description);
+            service.addRecipeWithPhoto(recipeDto, imageFile);
             return new ResponseEntity<>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
         } catch (IOException e) {
             return new ResponseEntity<>(new FormatResponse("Error uploading image"), HttpStatus.BAD_REQUEST);

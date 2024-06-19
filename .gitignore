@@ -1,7 +1,7 @@
 HELP.md
 target/
 logs/*
-upload/*
+upload/image/*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

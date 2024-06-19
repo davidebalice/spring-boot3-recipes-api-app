@@ -103,7 +103,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe addRecipe2(RecipeDto recipeDto, MultipartFile imageFile) throws IOException {
+    public Recipe addRecipeWithPhoto(RecipeDto recipeDto, MultipartFile imageFile) throws IOException {
         return saveRecipe(recipeDto, imageFile);
     }
 
@@ -262,6 +262,11 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public String uploadImage(int id, MultipartFile multipartFile, String uploadPath) throws IOException {
+
+        System.out.println(multipartFile);
+        System.out.println(multipartFile);
+        System.out.println(multipartFile);
+        System.out.println(multipartFile);
         if (multipartFile == null || multipartFile.getOriginalFilename() == null) {
             throw new IllegalArgumentException("Invalid file");
         }

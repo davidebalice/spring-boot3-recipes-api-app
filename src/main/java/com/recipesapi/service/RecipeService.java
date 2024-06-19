@@ -19,7 +19,7 @@ public interface RecipeService {
 
     Recipe addRecipe(RecipeDto recipeDto) throws IOException;
 
-    Recipe addRecipe2(RecipeDto recipeDto, MultipartFile imageFile) throws IOException;
+    Recipe addRecipeWithPhoto(RecipeDto recipeDto, MultipartFile imageFile) throws IOException;
 
     Recipe getRecipeById(int recipeId);
 
