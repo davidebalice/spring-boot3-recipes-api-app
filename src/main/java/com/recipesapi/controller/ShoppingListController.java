@@ -97,7 +97,7 @@ public class ShoppingListController {
     public ResponseEntity<FormatResponse> add(@RequestBody ShoppingList s) {
         service.addIngredient(s);
         //
-        return new ResponseEntity<FormatResponse>(new FormatResponse("ShoppingList added successfully!"), HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient added successfully!"), HttpStatus.CREATED);
     }
     //
 

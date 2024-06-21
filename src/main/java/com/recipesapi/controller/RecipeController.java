@@ -110,7 +110,7 @@ public class RecipeController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> addRecipe(@Valid @RequestBody RecipeDto recipeDto) {
-
+System.out.println(recipeDto);
         try {
             service.addRecipe(recipeDto);
             return new ResponseEntity<>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);

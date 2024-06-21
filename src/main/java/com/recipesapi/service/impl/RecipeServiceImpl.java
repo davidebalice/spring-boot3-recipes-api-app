@@ -64,12 +64,14 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = new Recipe();
         recipe.setTitle(recipeDto.getTitle());
         recipe.setDescription(recipeDto.getDescription());
+        recipe.setPreparationTime(recipeDto.getPreparationTime());
+        recipe.setCookingTime(recipeDto.getCookingTime());
+        recipe.setTips(recipeDto.getTips());
         recipe.setCategory(category);
 
         if (recipeDto.getIngredients() != null) {
             Set<Ingredient> ingredients = new HashSet<>();
 
-            // Create a map of existing ingredients by title for easy lookup
             Map<String, Ingredient> existingIngredientMap = recipe.getIngredients().stream()
                     .collect(Collectors.toMap(Ingredient::getTitle, ingredient -> ingredient));
 
@@ -114,6 +116,9 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = modelMapper.map(recipeDto, Recipe.class);
         recipe.setTitle(recipeDto.getTitle());
         recipe.setDescription(recipeDto.getDescription());
+        recipe.setPreparationTime(recipeDto.getPreparationTime());
+        recipe.setCookingTime(recipeDto.getCookingTime());
+        recipe.setTips(recipeDto.getTips());
         recipe.setCategory(category);
 
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -180,6 +185,20 @@ public class RecipeServiceImpl implements RecipeService {
             if (updatedRecipe.getDescription() != null) {
                 existingRecipe.setDescription(updatedRecipe.getDescription());
             }
+            if (updatedRecipe.getPreparationTime() != null) {
+                existingRecipe.setPreparationTime(updatedRecipe.getPreparationTime());
+            }
+            if (updatedRecipe.getCookingTime() != null) {
+                existingRecipe.setCookingTime(updatedRecipe.getCookingTime());
+            }
+            if (updatedRecipe.getTips() != null) {
+                existingRecipe.setTips(updatedRecipe.getTips());
+            }
+          
+
+
+
+
 
             System.out.println(updatedRecipe.getImageUrl());
 
@@ -263,10 +282,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public String uploadImage(int id, MultipartFile multipartFile, String uploadPath) throws IOException {
 
-        System.out.println(multipartFile);
-        System.out.println(multipartFile);
-        System.out.println(multipartFile);
-        System.out.println(multipartFile);
+
         if (multipartFile == null || multipartFile.getOriginalFilename() == null) {
             throw new IllegalArgumentException("Invalid file");
         }

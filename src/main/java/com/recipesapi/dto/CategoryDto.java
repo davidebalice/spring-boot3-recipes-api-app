@@ -23,4 +23,6 @@ public class CategoryDto {
     private int id;
     private String name;
     private String description;
+    private String bg;
+    private String color;
 }

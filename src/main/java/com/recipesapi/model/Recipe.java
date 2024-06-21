@@ -45,6 +45,15 @@ public class Recipe {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "preparation_time")
+    private String preparationTime;
+
+    @Column(name = "cooking_time")
+    private String cookingTime;
+
+    @Column(name = "tips")
+    private String tips;
+
     private boolean active;
 
     @Column(name = "created_at")

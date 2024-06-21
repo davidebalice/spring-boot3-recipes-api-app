@@ -42,7 +42,9 @@ public class Category {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    
+    private String bg;
+    private String color;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
