@@ -54,6 +54,9 @@ public class Recipe {
     @Column(name = "tips")
     private String tips;
 
+    @Column(name = "difficulty")
+    private double difficulty;
+
     private boolean active;
 
     @Column(name = "created_at")

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -67,6 +68,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setPreparationTime(recipeDto.getPreparationTime());
         recipe.setCookingTime(recipeDto.getCookingTime());
         recipe.setTips(recipeDto.getTips());
+        recipe.setDifficulty(recipeDto.getDifficulty());
         recipe.setCategory(category);
 
         if (recipeDto.getIngredients() != null) {
@@ -119,6 +121,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setPreparationTime(recipeDto.getPreparationTime());
         recipe.setCookingTime(recipeDto.getCookingTime());
         recipe.setTips(recipeDto.getTips());
+        recipe.setDifficulty(recipeDto.getDifficulty());
         recipe.setCategory(category);
 
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -194,12 +197,9 @@ public class RecipeServiceImpl implements RecipeService {
             if (updatedRecipe.getTips() != null) {
                 existingRecipe.setTips(updatedRecipe.getTips());
             }
-          
-
-
-
-
-
+            if (updatedRecipe.getDifficulty() != 0.00) {
+                existingRecipe.setDifficulty(updatedRecipe.getDifficulty());
+            }
             System.out.println(updatedRecipe.getImageUrl());
 
             if (updatedRecipe.getImageUrl() != null) {
@@ -265,13 +265,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<Recipe> searchRecipes(String keyword) {
-        return repository.searchRecipes(keyword);
+    public List<Recipe> searchRecipes(String keyword, Pageable pageable) {
+        return repository.searchRecipes(keyword, pageable);
     }
 
     @Override
-    public List<Recipe> searchRecipesByCategoryId(int categoryId) {
-        return repository.findByCategoryId(categoryId);
+    public List<Recipe> searchRecipesByCategoryId(int categoryId, Pageable pageable) {
+        return repository.findByCategoryId(categoryId, pageable);
     }
 
     @Override
@@ -281,7 +281,6 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public String uploadImage(int id, MultipartFile multipartFile, String uploadPath) throws IOException {
-
 
         if (multipartFile == null || multipartFile.getOriginalFilename() == null) {
             throw new IllegalArgumentException("Invalid file");

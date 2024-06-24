@@ -2,7 +2,6 @@ package com.recipesapi.dto;
 
 import java.util.Set;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +27,7 @@ public class RecipeDto {
     private String preparationTime;
     private String cookingTime;
     private String tips;
+    private double difficulty;
     private String imageUrl;
     private CategoryDto categoryDto;
     private Set<IngredientDto> ingredients;

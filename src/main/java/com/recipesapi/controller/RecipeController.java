@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -66,8 +68,14 @@ public class RecipeController {
     @Operation(summary = "Get all recipes", description = "Retrieve a list of all recipes")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
-    public ResponseEntity<Iterable<RecipeDto>> list() {
-        Iterable<Recipe> recipes = repository.findAll();
+    public ResponseEntity<Iterable<RecipeDto>> list(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Iterable<Recipe> recipes = repository.findAll(pageable);
+
+        // Page<Recipe> recipePage = repository.findAll(pageable);
+
         List<RecipeDto> recipesDto = new ArrayList<>();
         for (Recipe recipe : recipes) {
             RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
@@ -110,7 +118,6 @@ public class RecipeController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> addRecipe(@Valid @RequestBody RecipeDto recipeDto) {
-System.out.println(recipeDto);
         try {
             service.addRecipe(recipeDto);
             return new ResponseEntity<>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
@@ -174,8 +181,12 @@ System.out.println(recipeDto);
     @Operation(summary = "Search Recipe REST API", description = "Search Recipe on database by filter")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/search")
-    public ResponseEntity<List<RecipeDto>> searchRecipes(@RequestParam("keyword") String keyword) {
-        List<Recipe> recipes = service.searchRecipes(keyword);
+    public ResponseEntity<List<RecipeDto>> searchRecipes(@RequestParam("keyword") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        List<Recipe> recipes = service.searchRecipes(keyword, pageable);
         List<RecipeDto> recipesDto = recipes.stream()
                 .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
                 .collect(Collectors.toList());
@@ -188,8 +199,11 @@ System.out.println(recipeDto);
     @Operation(summary = "Search Recipe by Category Api REST API", description = "Search Recipe by Category Api on database by id")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/searchByCategoryId")
-    public ResponseEntity<List<RecipeDto>> searchRecipesByCategoryId(@RequestParam int categoryId) {
-        List<Recipe> recipes = service.searchRecipesByCategoryId(categoryId);
+    public ResponseEntity<List<RecipeDto>> searchRecipesByCategoryId(@RequestParam int categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Recipe> recipes = service.searchRecipesByCategoryId(categoryId, pageable);
 
         List<RecipeDto> recipesDto = recipes.stream()
                 .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
