@@ -2,6 +2,7 @@ package com.recipesapi.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -68,20 +70,23 @@ public class RecipeController {
     @Operation(summary = "Get all recipes", description = "Retrieve a list of all recipes")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
-    public ResponseEntity<Iterable<RecipeDto>> list(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Map<String, Object>> list(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Iterable<Recipe> recipes = repository.findAll(pageable);
-
-        // Page<Recipe> recipePage = repository.findAll(pageable);
 
         List<RecipeDto> recipesDto = new ArrayList<>();
         for (Recipe recipe : recipes) {
             RecipeDto recipeDto = modelMapper.map(recipe, RecipeDto.class);
             recipesDto.add(recipeDto);
         }
-        return ResponseEntity.ok(recipesDto);
+        Page<Recipe> recipesPage = repository.findAll(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipes", recipesDto);
+        response.put("totalItems", recipesPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
     }
     //
 
@@ -181,16 +186,21 @@ public class RecipeController {
     @Operation(summary = "Search Recipe REST API", description = "Search Recipe on database by filter")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/search")
-    public ResponseEntity<List<RecipeDto>> searchRecipes(@RequestParam("keyword") String keyword,
+    public ResponseEntity<Map<String, Object>> searchRecipes(@RequestParam("keyword") String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "9") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         List<Recipe> recipes = service.searchRecipes(keyword, pageable);
         List<RecipeDto> recipesDto = recipes.stream()
                 .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(recipesDto);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipes", recipesDto);
+        response.put("totalItems", recipes.size());
+
+        return ResponseEntity.ok(response);
     }
     //
 
@@ -199,7 +209,7 @@ public class RecipeController {
     @Operation(summary = "Search Recipe by Category Api REST API", description = "Search Recipe by Category Api on database by id")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/searchByCategoryId")
-    public ResponseEntity<List<RecipeDto>> searchRecipesByCategoryId(@RequestParam int categoryId,
+    public ResponseEntity<Map<String, Object>> searchRecipesByCategoryId(@RequestParam int categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -208,7 +218,12 @@ public class RecipeController {
         List<RecipeDto> recipesDto = recipes.stream()
                 .map(recipe -> modelMapper.map(recipe, RecipeDto.class))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(recipesDto);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipes", recipesDto);
+        response.put("totalItems", recipes.size());
+
+        return ResponseEntity.ok(response);
     }
     //
 
