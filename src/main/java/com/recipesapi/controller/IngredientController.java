@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.recipesapi.config.DemoMode;
+import com.recipesapi.exception.DemoModeException;
 import com.recipesapi.model.Ingredient;
 import com.recipesapi.repository.IngredientRepository;
 import com.recipesapi.service.IngredientService;
@@ -36,6 +38,9 @@ public class IngredientController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     public IngredientController(IngredientRepository repository, IngredientService service) {
         this.repository = repository;
@@ -68,6 +73,9 @@ public class IngredientController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@Valid @RequestBody Ingredient p) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         repository.save(p);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient addedd successfully"),
                 HttpStatus.CREATED);
@@ -80,6 +88,9 @@ public class IngredientController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody Ingredient updatedIngredient) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.updateIngredient(id, updatedIngredient);
     }
     //
@@ -90,6 +101,9 @@ public class IngredientController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteIngredient(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient deleted successfully"), HttpStatus.OK);
     }

@@ -31,7 +31,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.recipesapi.config.DemoMode;
 import com.recipesapi.dto.RecipeDto;
+import com.recipesapi.exception.DemoModeException;
 import com.recipesapi.model.Recipe;
 import com.recipesapi.repository.RecipeRepository;
 import com.recipesapi.service.RecipeService;
@@ -51,6 +53,9 @@ public class RecipeController {
 
     private final RecipeRepository repository;
     private final RecipeService service;
+
+    @Autowired
+    private DemoMode demoMode;
 
     private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
 
@@ -123,6 +128,11 @@ public class RecipeController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> addRecipe(@Valid @RequestBody RecipeDto recipeDto) {
+
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
+
         try {
             service.addRecipe(recipeDto);
             return new ResponseEntity<>(new FormatResponse("Recipe added successfully!"), HttpStatus.CREATED);
@@ -145,6 +155,9 @@ public class RecipeController {
             @RequestPart("idCategory") Long idCategory,
             @RequestPart("ingredients") List<Map<String, String>> ingredients,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
 
         try {
             RecipeDto recipeDto = new RecipeDto();
@@ -163,6 +176,9 @@ public class RecipeController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody RecipeDto updatedRecipe) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         if (!repository.existsById(id)) {
             return new ResponseEntity<>(new FormatResponse("Recipe not found!"), HttpStatus.NOT_FOUND);
         }
@@ -176,6 +192,9 @@ public class RecipeController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteRecipe(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Recipe deleted successfully!"), HttpStatus.OK);
     }
@@ -246,6 +265,9 @@ public class RecipeController {
     @PostMapping("/{id}/uploadImage")
     public ResponseEntity<FormatResponse> uploadImage(@PathVariable int id,
             @RequestParam("image") MultipartFile multipartFile) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         try {
             String fileDownloadUri = service.uploadImage(id, multipartFile, uploadPath);
             return new ResponseEntity<>(new FormatResponse(fileDownloadUri), HttpStatus.OK);

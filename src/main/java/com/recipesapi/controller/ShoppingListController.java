@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.recipesapi.config.DemoMode;
+import com.recipesapi.exception.DemoModeException;
 import com.recipesapi.model.Ingredient;
 import com.recipesapi.model.ShoppingList;
 import com.recipesapi.repository.ShoppingListRepository;
@@ -40,6 +42,9 @@ public class ShoppingListController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     public ShoppingListController(ShoppingListRepository repository, ShoppingListService service) {
         this.repository = repository;
@@ -95,8 +100,10 @@ public class ShoppingListController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@RequestBody ShoppingList s) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.addIngredient(s);
-        //
         return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient added successfully!"), HttpStatus.CREATED);
     }
     //
@@ -113,6 +120,9 @@ public class ShoppingListController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody ShoppingList updatedShoppingList) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         if (!repository.existsById(id)) {
             return new ResponseEntity<>(new FormatResponse("ShoppingList not found!"), HttpStatus.NOT_FOUND);
         }
@@ -126,6 +136,9 @@ public class ShoppingListController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteShoppingList(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("ShoppingList deleted successfully!"), HttpStatus.OK);
     }

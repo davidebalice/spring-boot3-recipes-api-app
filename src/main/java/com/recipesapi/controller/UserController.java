@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.recipesapi.config.DemoMode;
 import com.recipesapi.dto.UserDto;
+import com.recipesapi.exception.DemoModeException;
 import com.recipesapi.model.User;
 import com.recipesapi.repository.UserRepository;
 import com.recipesapi.service.UserService;
@@ -35,6 +38,9 @@ public class UserController {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+
+    @Autowired
+    private DemoMode demoMode;
 
     public UserController(UserRepository repository, PasswordEncoder passwordEncoder, UserService userService) {
         this.repository = repository;
@@ -87,6 +93,9 @@ public class UserController {
     )
     @PostMapping("/add")
     public ResponseEntity<String> createUser(@RequestBody User user) {
+         if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
         return ResponseEntity.ok("User created successfully");
@@ -106,6 +115,9 @@ public class UserController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User updateUser) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return userService.updateUser(id, updateUser);
     }
     //
@@ -123,6 +135,9 @@ public class UserController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") Integer idUtente) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         if (idUtente != null) {
             Optional<User> pOptional = repository.findById(idUtente);
             if (pOptional.isPresent()) {
