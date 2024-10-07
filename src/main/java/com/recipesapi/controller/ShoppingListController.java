@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.recipesapi.config.DemoMode;
 import com.recipesapi.exception.DemoModeException;
-import com.recipesapi.model.Ingredient;
 import com.recipesapi.model.ShoppingList;
 import com.recipesapi.repository.ShoppingListRepository;
 import com.recipesapi.service.ShoppingListService;
@@ -32,7 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "CRUD REST APIs for Shopping list Resource", description = "RECIPES CRUD REST APIs - Create ShoppingList, Update ShoppingList, Get ShoppingList, Get All ShoppingLists, Delete ShoppingList")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/shoppinglist/")
 public class ShoppingListController {
@@ -100,18 +99,23 @@ public class ShoppingListController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<FormatResponse> add(@RequestBody ShoppingList s) {
-         if (demoMode.isEnabled()) {
+        if (demoMode.isEnabled()) {
             throw new DemoModeException();
         }
         service.addIngredient(s);
-        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient added successfully!"), HttpStatus.CREATED);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("Ingredient added successfully!"),
+                HttpStatus.CREATED);
     }
     //
 
     @PostMapping("/add-ingredients")
     public ResponseEntity<FormatResponse> addIngredients(@RequestBody List<ShoppingList> ingredients) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.addIngredients(ingredients);
-        return new ResponseEntity<>(new FormatResponse("Ingredients added successfully to shopping list!"), HttpStatus.CREATED);
+        return new ResponseEntity<>(new FormatResponse("Ingredients added successfully to shopping list!"),
+                HttpStatus.CREATED);
     }
 
     // Update ShoppingList Rest Api
@@ -119,7 +123,8 @@ public class ShoppingListController {
     @Operation(summary = "Update ShoppingList REST API", description = "Update ShoppingList on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody ShoppingList updatedShoppingList) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id,
+            @RequestBody ShoppingList updatedShoppingList) {
         if (demoMode.isEnabled()) {
             throw new DemoModeException();
         }
@@ -140,11 +145,11 @@ public class ShoppingListController {
             throw new DemoModeException();
         }
         service.deleteShoppingList(id);
-        return new ResponseEntity<FormatResponse>(new FormatResponse("ShoppingList deleted successfully!"), HttpStatus.OK);
+        return new ResponseEntity<FormatResponse>(new FormatResponse("ShoppingList deleted successfully!"),
+                HttpStatus.OK);
     }
     //
 
- 
     // Get all ingredients Rest Api and obtain a stream data
     // http://localhost:8081/api/v1/shoppinglist/stream-test
     @Operation(summary = "Get all ingredients", description = "Retrieve a list of all ingredients in shopping list")
